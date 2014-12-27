@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from ecomstore import settings
-from views import file_not_found_404
 
 admin.autodiscover()
 
@@ -12,6 +11,7 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('catalog.urls')),
+    url(r'^cart/', include('cart.urls')),
 )
 
-handler404 = 'file_not_found_404'
+handler404 = 'ecomstore.views.file_not_found_404'
