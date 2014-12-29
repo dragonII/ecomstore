@@ -8,6 +8,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
+# Change to true before deploying into production
+ENABLE_SSL = False
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -41,6 +44,7 @@ INSTALLED_APPS = (
     'catalog',
     'utils',
     'cart',
+    'checkout',
     #'djangodblog',
 )
 
@@ -52,6 +56,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'SSLMiddleware.SSLRedirect',
     #'djangodblog.DBLogMiddleware',
 )
 
@@ -121,3 +126,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
         'django.contrib.messages.context_processors.messages',
         'utils.context_processors.ecomstore',
         )
+
+
+GOOGLE_CHECKOUT_MERCHANT_ID = 'abcdefg4TestPurpose'
+GOOGLE_CHECKOUT_MERCHANT_KEY = 'key4TestPurpose'
+GOOGLE_CHECKOUT_URL = 'https://sandbox.google.com/checkout/api/v2/merchantCheckout/Merchant/' + GOOGLE_CHECKOUT_MERCHANT_ID
