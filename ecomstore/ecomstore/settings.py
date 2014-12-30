@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'utils',
     'cart',
     'checkout',
+    'accounts',
     #'djangodblog',
 )
 
@@ -137,3 +138,6 @@ AUTHNET_POST_PATH = '/gateway/transact.dll'
 AUTHNET_LOGIN = 'wanglong1982'
 AUTHNET_API_LOGIN_ID = '5g9cT5NBRns'
 AUTHNET_KEY = '3Qz22x5HLPm8P2W4'
+
+
+LOGIN_REDIRECT_URL = '/accounts/my_account/'

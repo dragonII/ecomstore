@@ -57,6 +57,9 @@ class Order(models.Model):
         for item in order_items:
             total += item.total
         return total
+    @models.permalink
+    def get_absolute_url(self):
+        return ('order_details', (), { 'order_id' : self.id })
 
 
 class OrderItem(models.Model):
