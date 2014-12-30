@@ -1,5 +1,5 @@
 from django import forms
-from checkout.models import Order
+from models import Order
 import datetime
 import re
 
@@ -43,7 +43,7 @@ def cardLuhnChecksumIsValid(card_number):
         sum = sum + digit
     return ( (sum % 10) == 0)
 
-class CheckoutForm(form.ModelForm):
+class CheckoutForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CheckoutForm, self).__init__(*args, **kwargs)
         # override default attributes
@@ -61,15 +61,15 @@ class CheckoutForm(form.ModelForm):
         self.fields['credit_card_expire_month'].widget.attrs['size'] = '1' 
         self.fields['credit_card_cvv'].widget.attrs['size'] = '5'
 
-        class Meta:
-            model = Order
-            exclude = ('status', 'ip_address', 'user', 'transaction_id',)
+    class Meta:
+        model = Order
+        exclude = ('status', 'ip_address', 'user', 'transaction_id',)
 
-        credit_card_number = forms.CharField()
-        credit_card_type = forms.CharField(widget = forms.Select(choices = CARD_TYPES))
-        credit_card_expire_month = forms.CharField(widget = forms.Select(choices = cc_expire_months()))
-        credit_card_expire_year = forms.CharField(widget = forms.Select(choices = cc_expire_years()))
-        credit_card_cvv = forms.CharField()
+    credit_card_number = forms.CharField()
+    credit_card_type = forms.CharField(widget = forms.Select(choices = CARD_TYPES))
+    credit_card_expire_month = forms.CharField(widget = forms.Select(choices = cc_expire_months()))
+    credit_card_expire_year = forms.CharField(widget = forms.Select(choices = cc_expire_years()))
+    credit_card_cvv = forms.CharField()
 
     def clean_credit_card_number(self):
         cc_number = self.cleaned_data['credit_card_number']

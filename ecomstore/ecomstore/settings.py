@@ -131,3 +131,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 GOOGLE_CHECKOUT_MERCHANT_ID = 'abcdefg4TestPurpose'
 GOOGLE_CHECKOUT_MERCHANT_KEY = 'key4TestPurpose'
 GOOGLE_CHECKOUT_URL = 'https://sandbox.google.com/checkout/api/v2/merchantCheckout/Merchant/' + GOOGLE_CHECKOUT_MERCHANT_ID
+
+AUTHNET_POST_URL = 'test.authorize.net'
+AUTHNET_POST_PATH = '/gateway/transact.dll'
+AUTHNET_LOGIN = 'wanglong1982'
+AUTHNET_API_LOGIN_ID = '5g9cT5NBRns'
+AUTHNET_KEY = '3Qz22x5HLPm8P2W4'

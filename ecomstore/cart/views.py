@@ -20,8 +20,8 @@ def show_cart(request, template_name = "cart/cart.html"):
         if postdata['submit'] == 'Update':
             shoppingcart.update_cart(request)
         if postdata['submit'] == 'Checkout':
-            print("Before get_checkout_url")
             checkout_url = checkout.get_checkout_url(request)
+            print("checkout_url: %s" % checkout_url)
             return HttpResponseRedirect(checkout_url)
     cart_items = shoppingcart.get_cart_items(request)
     page_title = 'Shopping Cart'
