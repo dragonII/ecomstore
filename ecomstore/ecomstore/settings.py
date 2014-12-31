@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'cart',
     'checkout',
     'accounts',
+    'search',
     #'djangodblog',
 )
 
@@ -145,3 +146,5 @@ LOGIN_REDIRECT_URL = '/accounts/my_account/'
 
 AUTH_PROFILE_MODULE = 'accounts.userprofile'
 #AUTH_USER_MODEL = 'accounts.UserProfile'
+
+PRODUCTS_PER_PAGE = 12

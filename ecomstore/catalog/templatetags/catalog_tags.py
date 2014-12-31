@@ -12,10 +12,8 @@ def cart_box(request):
 
 @register.inclusion_tag("tags/category_list.html")
 def category_list(request_path):
-    active_categories = Category.objects.filter(is_active = True)
-    #print "request_path : %s" % request_path
-    #for c in active_categories:
-    #    print "absolute_url : %s" % c.get_absolute_url()
+    #active_categories = Category.objects.filter(is_active = True)
+    active_categories = Category.active.all()
     return {
             'active_categories' : active_categories,
             'request_path' : request_path
