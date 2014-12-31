@@ -112,7 +112,8 @@ SITE_ID = 1
 META_KEYWORDS = 'Music, instruments, music accessories, musician supplies'
 META_DESCRIPTION = 'Modern Musician is an online supplier of instruments, sheet music, and other accessories for musicians'
 
-#MEDIA_URL = '/media/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # List of processors used by RequestContext to populate the context.
 # Each one should be a callable that takes the request object as its
@@ -141,3 +142,6 @@ AUTHNET_KEY = '3Qz22x5HLPm8P2W4'
 
 
 LOGIN_REDIRECT_URL = '/accounts/my_account/'
+
+AUTH_PROFILE_MODULE = 'accounts.userprofile'
+#AUTH_USER_MODEL = 'accounts.UserProfile'

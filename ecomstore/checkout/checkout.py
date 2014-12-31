@@ -39,7 +39,7 @@ def process(request):
         results = {'order_number':0, 'message':'There is a problem with you credit card'}
     if response[0] == ERROR or response[0] == HELD_FOR_REVIEW:
         results = {'order_number':0, 'message':'Error processing your order.'}
-    #create_order(request, transaction_id = 1024)
+    #create_order(request, transaction_id = 1025)
     return results
 
 def create_order(request, transaction_id):
@@ -65,5 +65,9 @@ def create_order(request, transaction_id):
             oi.save()
         # all set, empty card
         shoppingcart.empty_cart(request)
+        # save profile info for future orders
+        if request.user.is_authenticated():
+            from accounts import profile
+            profile.set(request)
     # return the new order object
     return order
