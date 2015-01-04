@@ -1,11 +1,15 @@
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.core import urlresolvers
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.utils import simplejson
+from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
-from catalog.models import Category, Product
+from catalog.models import Category, Product, ProductReview
 from cart import shoppingcart
-from catalog.forms import ProductAddToCartForm
+from catalog.forms import ProductAddToCartForm, ProductReviewForm
 from stats import stats
 from ecomstore.settings import PRODUCTS_PER_ROW
 
@@ -25,6 +29,13 @@ def show_category(request, category_slug, template_name="catalog/category.html")
     meta_keywords = c.meta_keywords
     meta_description = c.meta_description
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+def get_json_products(request):
+    from django.core import serializers
+    products = Product.active.all()
+    json_products = serializers.serialize("json", products)
+    return HttpResponse(json_products, content_type='application/javascript; charset=utf-8')
+    
 
 def show_product(request, product_slug, template_name = "catalog/product.html"):
     p = get_object_or_404(Product, slug = product_slug)
@@ -55,7 +66,40 @@ def show_product(request, product_slug, template_name = "catalog/product.html"):
     form.fields['product_slug'].widget.attrs['value'] = product_slug
     # set the test cookie on our first GET request
     request.session.set_test_cookie()
+
+    product_reviews = ProductReview.approved.filter(product = p).order_by('-date')
+    review_form = ProductReviewForm()
     return render_to_response("catalog/product.html", locals(), context_instance = RequestContext(request))
+
+@login_required
+def test_review(request):
+    print("In test_review function")
+
+@login_required
+@csrf_exempt
+def add_review(request):
+    print("In add_review")
+    form = ProductReviewForm(request.POST)
+    if form.is_valid():
+        print("Valid input");
+        review = form.save(commit = False)
+        slug = request.POST.get('slug')
+        product = Product.active.get(slug = slug)
+        review.user = request.user
+        review.product = product
+        review.save()
+
+        template = "catalog/product_review.html"
+        html = render_to_string(template, {'review': review})
+        response = simplejson.dumps({'success':'True', 'html':html})
+    else:
+        print("Invalid input")
+        html = form.errors.as_ul()
+
+
+        response = simplejson.dumps({'success':'False', 'html': html})
+    return HttpResponse(response, content_type='application/javascript; charset=utf-8')
+
 
 #def show_product(request, product_slug, template_name="catalog/product.html"):
 #    p = get_object_or_404(Product, slug=product_slug)
