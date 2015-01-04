@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'checkout',
     'accounts',
     'search',
+    'stats',
     #'djangodblog',
 )
 
@@ -148,3 +149,4 @@ AUTH_PROFILE_MODULE = 'accounts.userprofile'
 #AUTH_USER_MODEL = 'accounts.UserProfile'
 
 PRODUCTS_PER_PAGE = 12
+PRODUCTS_PER_ROW = 4

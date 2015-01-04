@@ -33,6 +33,10 @@ class ActiveProductManager(models.Manager):
     def get_query_set(self):
         return super(ActiveProductManager, self).get_query_set().filter(is_active = True)
 
+class FeaturedProductManager(models.Manager):
+    def all(self):
+        return super(FeaturedProductManager, self).all().filter(is_active = True).filter(is_featured = True)
+
 class Product(models.Model):
     name = models.CharField(max_length = 255, unique = True)
     slug = models.SlugField(max_length = 255, unique = True, help_text = 'Unique value for product page URL, created from name.')
@@ -56,6 +60,7 @@ class Product(models.Model):
 
     objects = models.Manager()
     active = ActiveProductManager()
+    featured = FeaturedProductManager()
 
     class Meta:
         db_table = 'products'
@@ -63,6 +68,32 @@ class Product(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def cross_sells(self):
+        from checkout.models import Order, OrderItem
+        orders = Order.objects.filter(orderitem__product = self)
+        order_items = OrderItem.objects.filter(order__in = orders).exclude(product = self)
+        products = Product.active.filter(orderitem__in = order_items).distinct()
+        return products
+
+    def cross_sells_user(self):
+        from checkout.models import Order, OrderItem
+        from django.contrib.auth.modes import User
+        users = User.objects.filter(order__orderitem__product = self)
+        items = OrderItem.objects.filter(order__user__in = users).exclude(product = self)
+        products = Product.active.filter(orderitem__in = items).distinct()
+        return products
+
+    def cross_sells_hybrid(self):
+        from checkout.models import Order, OrderItem
+        from django.contrib.auth.models import User
+        from django.db.models import Q
+        orders = Order.objects.filter(orderitem__product = self)
+        users = User.objects.filter(order__orderitem__product = self)
+        items = OrderItem.objects.filter( Q(order__in = orders) |
+                                          Q(order__user__in = users)).exclude(product = self)
+        products = Product.active.filter(orderitem__in = items).distinct()
+        return products
 
     @models.permalink
     def get_absolute_url(self):
