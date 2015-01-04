@@ -7,5 +7,8 @@ urlpatterns = patterns('catalog.views',
         url(r'^get_json_products/$', 'get_json_products'),
         url(r'^review/product/add/$', 'add_review'),
         url(r'^review/product/test/$', 'test_review'),
+        url(r'^tag/product/add/$', 'add_tag'),
+        url(r'^tag_cloud/$', 'tag_cloud', {'template_name': 'catalog/tag_cloud.html'}, 'tag_cloud'),
+        url(r'^tag/(?P<tag>[-\w]+)/$', 'tag', {'template_name' : 'catalog/tag.html'}, 'tag'),
         )
 

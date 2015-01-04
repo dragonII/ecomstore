@@ -6,6 +6,8 @@ from django.utils import simplejson
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+import tagging
+from tagging.models import Tag, TaggedItem
 
 from catalog.models import Category, Product, ProductReview
 from cart import shoppingcart
@@ -100,6 +102,25 @@ def add_review(request):
         response = simplejson.dumps({'success':'False', 'html': html})
     return HttpResponse(response, content_type='application/javascript; charset=utf-8')
 
+@login_required
+@csrf_exempt
+def add_tag(request):
+    tags = request.POST.get('tag', '')
+    slug = request.POST.get('slug', '')
+    if len(tags) > 2:
+        p = Product.active.get(slug = slug)
+        html = u''
+        template = "catalog/tag_link.html"
+        for tag in tags.split():
+            tag.strip(',')
+            Tag.objects.add_tag(p, tag)
+        for tag in p.tags:
+            html += render_to_string(template, {'tag' : tag})
+        response = simplejson.dumps({'success' : 'True', 'html' : html })
+    else:
+        response = simplejson.dumps({'success' : 'False' })
+    return HttpResponse(response, content_type = 'application/javascript; charset=utf-8')
+
 
 #def show_product(request, product_slug, template_name="catalog/product.html"):
 #    p = get_object_or_404(Product, slug=product_slug)
@@ -109,3 +130,14 @@ def add_review(request):
 #    meta_description = p.meta_description
 #    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
+def tag_cloud(request, template_name = "catalog/tag_cloud.html"):
+    product_tags = Tag.objects.cloud_for_model(Product, steps = 9,
+                                               distribution = tagging.utils.LOGARITHMIC,
+                                               filters = {'is_active' : True })
+    page_title = 'Product Tag Cloud'
+    return render_to_response(template_name, locals(), context_instance = RequestContext(request))
+
+def tag(request, tag, template_name = "catalog/tag.html"):
+    products = TaggedItem.objects.get_by_model(Product.active, tag)
+    return render_to_response(template_name, locals(), context_instance = RequestContext(request))

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import tagging
 
 class ActiveCategoryManager(models.Manager):
     def get_query_set(self):
@@ -106,6 +107,11 @@ class Product(models.Model):
             return self.price
         else:
             return None
+
+try:
+    tagging.register(Product)
+except tagging.AlreadyRegistered:
+    pass
 
 class ActiveProductReviewManager(models.Manager):
     def all(self):
