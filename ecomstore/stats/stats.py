@@ -38,7 +38,7 @@ def recommended_from_views(request):
             if all_viewed:
                 other_viewed = ProductView.objects.filter(product__in = all_viewed).exclude(product__in = viewed)
                 if other_viewed:
-                    return Product.active.filter(productviews__in = other_viewed).distinct()
+                    return Product.active.filter(productview__in = other_viewed).distinct()
 
 def get_recently_viewed(request):
     t_id = tracking_id(request)
