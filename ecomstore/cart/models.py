@@ -2,7 +2,7 @@ from django.db import models
 from catalog.models import Product
 
 class CartItem(models.Model):
-    cart_id = models.CharField(max_length = 50)
+    cart_id = models.CharField(max_length = 50, db_index = True)
     date_added = models.DateTimeField(auto_now_add = True)
     quantity = models.IntegerField(default = 1)
     product = models.ForeignKey('catalog.Product', unique = False)

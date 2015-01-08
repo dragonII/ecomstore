@@ -14,6 +14,8 @@ from cart import shoppingcart
 from catalog.forms import ProductAddToCartForm, ProductReviewForm
 from stats import stats
 from ecomstore.settings import PRODUCTS_PER_ROW
+from ecomstore.settings import CACHE_TIMEOUT
+from django.core.cache import cache
 
 
 def index(request, template_name="catalog/index.html"):
@@ -25,7 +27,13 @@ def index(request, template_name="catalog/index.html"):
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 def show_category(request, category_slug, template_name="catalog/category.html"):
-    c = get_object_or_404(Category, slug = category_slug)
+    category_cache_key = request.path
+    c = cache.get(category_cache_key)
+    if not c:
+        c = get_object_or_404(Category, slug = category_slug)
+        cache.set(category_cache_key, c)
+
+    #c = get_object_or_404(Category, slug = category_slug)
     products = c.product_set.all()
     page_title = c.name
     meta_keywords = c.meta_keywords
@@ -40,7 +48,16 @@ def get_json_products(request):
     
 
 def show_product(request, product_slug, template_name = "catalog/product.html"):
-    p = get_object_or_404(Product, slug = product_slug)
+    product_cache_key = request.path
+    # get product from cache
+    p = cache.get(product_cache_key)
+    # if a cache miss, fall back on database query
+    if not p:
+        p = get_object_or_404(Product, slug = product_slug)
+        # store in cache for next time
+        cache.set(product_cache_key, p, CACHE_TIMEOUT)
+
+    #p = get_object_or_404(Product, slug = product_slug)
     from stats import stats
     stats.log_product_view(request, p) # add to product view
     categories = p.categories.all()

@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 import tagging
 
+from django.db.models.signals import post_save, post_delete
+from caching.caching import cache_update, cache_evict
+
 class ActiveCategoryManager(models.Manager):
     def get_query_set(self):
         return super(ActiveCategoryManager, self).get_query_set().filter(is_active = True)
@@ -30,6 +33,10 @@ class Category(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('catalog_category', (), { 'category_slug' : self.slug })
+
+    @property
+    def cache_key(self):
+        return self.get_absolute_url()
 
 class ActiveProductManager(models.Manager):
     def get_query_set(self):
@@ -102,6 +109,10 @@ class Product(models.Model):
         return ('catalog_product', (), { 'product_slug' : self.slug })
 
     @property
+    def cache_key(self):
+        return self.get_absolute_url()
+
+    @property
     def sale_price(self):
         if self.old_price > self.price:
             return self.price
@@ -130,3 +141,9 @@ class ProductReview(models.Model):
 
     objects = models.Manager()
     approved = ActiveProductReviewManager()
+
+
+post_save.connect(cache_update, sender = Product)
+post_delete.connect(cache_evict, sender = Product)
+post_save.connect(cache_update, sender = Category)
+post_delete.connect(cache_evict, sender = Category)

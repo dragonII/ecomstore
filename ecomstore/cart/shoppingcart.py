@@ -2,11 +2,27 @@ from cart.models import CartItem
 from catalog.models import Product
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
+from django.db.models import Max
+from ecomstore.settings import SESSION_AGE_DAYS
+from datetime import datetime, timedelta
+
 
 import decimal
 import random
 
 CART_ID_SESSION_KEY = 'cart_id'
+
+def remove_old_cart_items():
+    print "Removing old carts"
+    # calculate date of SESSION_AGE_DAYS days ago
+    remove_before = datetime.now() + timedelta(days = -SESSION_AGE_DAYS)
+    cart_ids = []
+    old_items = CartItem.objects.values('cart_id').annotate(last_change = Max('date_added')).filter(last_change__lt = remove_before).order_by()
+    for item in old_items:
+        cart_ids.append(item['cart_id'])
+    to_remove = CartItem.objects.filter(cart_id__in = cart_ids)
+    to_remove.delete()
+    print str(len(cart_ids)) + " carts were removed"
 
 # get the current user's cart id, sets new one if blank
 def _cart_id(request):
