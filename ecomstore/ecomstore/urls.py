@@ -17,6 +17,8 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('accounts.urls')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^search/', include('search.urls')),
+    url(r'^snippets/', include('snippets.urls')),
+    url(r'^api-auth/', include('rest_framework.urls', namespace = 'rest_framework')),
 )
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

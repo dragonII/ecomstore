@@ -49,6 +49,8 @@ INSTALLED_APPS = (
     'search',
     'stats',
     'tagging',
+    'rest_framework',
+    'snippets',
     #'djangodblog',
 )
 
